@@ -1,7 +1,6 @@
 from django.views.generic import DetailView
 from django.http import JsonResponse
 from django.shortcuts import render
-from .serializers import *
 
 # бизнес-логику спрятал сюда
 from .services import *
