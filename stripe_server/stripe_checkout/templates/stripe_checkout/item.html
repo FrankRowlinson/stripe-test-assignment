@@ -1,0 +1,54 @@
+{% extends 'stripe_checkout/base.html' %}
+{% load static %}
+{% load formatting_tags %}
+{% block content %}
+<section>
+    <div class="product">
+        <h3 class="product-name">{{ item.name }}</h3>
+        <h5 class="product-price">${{ item.price|cents_to_dollars }}</h5>
+        <p class="product-description">{{ item.description }}</p>
+      <button id="checkout-button">Buy</button>
+    </div>
+  </section>
+  <script>
+    const stripe = Stripe('{{ public_key }}')
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    const buyButton = document.getElementById('checkout-button')
+    buyButton.addEventListener('click', () => {
+    fetch("{% url 'create-checkout-session' item.pk %}", {
+        method: 'POST',
+        headers: {'X-CSRFToken': csrftoken},
+        mode: 'same-origin'
+    })
+        .then(function (response) {
+        return response.json()
+        })
+        .then(function (session) {
+        return stripe.redirectToCheckout({ sessionId: session.session_id })
+        })
+        .then(function (result) {
+        if (result.error) {
+            alert(result.error.message)
+        }
+        })
+    })
+
+  </script>
+{% endblock %}
