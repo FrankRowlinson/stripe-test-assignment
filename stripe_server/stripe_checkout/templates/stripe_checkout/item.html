@@ -8,6 +8,7 @@
         <h5 class="product-price">${{ item.price|cents_to_dollars }}</h5>
         <p class="product-description">{{ item.description }}</p>
       <button id="checkout-button">Buy</button>
+      {% csrf_token %}
     </div>
   </section>
   <script>
