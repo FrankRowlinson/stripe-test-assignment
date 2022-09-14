@@ -8,6 +8,9 @@ services:
       - 8000:8000
     image: app:django
     container_name: django_container
-    command: python3 stripe_server/manage.py runserver 0.0.0.0:8000
+    command: >
+      bash -c "python3 stripe_server/manage.py migrate 
+      && python3 stripe_server/manage.py loaddata stripe_server/test.json 
+      && python3 stripe_server/manage.py runserver 0.0.0.0:8000"
     env_file:
       - .env
